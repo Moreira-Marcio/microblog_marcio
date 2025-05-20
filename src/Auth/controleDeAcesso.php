@@ -2,6 +2,8 @@
 
 namespace Microblog\Auth;
 
+ControleDeAcesso::exigirAdmin();
+
 //sobre sessoes- no php sessão(session) é uma funcionalidade usada para controle de acesso e outras imformações que seja importante enquanto o navegador estiver aberto no site
 
 //exemplos: areas administrativas painel de controle/dashboard, area de cliente. areade aluno, etc.
@@ -48,5 +50,17 @@ final class ControleDeAcesso
         session_destroy();
         header("Location:../login.php?logout");
         exit;
+    }
+
+    public static function exigirAdmin(): void
+    {
+        self::iniciarSessao();
+
+        //se o tipo de usuario for diferente de admin
+        if ($_SESSION["tipo"] != "admin") {
+            session_destroy();
+            header("Location:nao-autorizado.php");
+            exit();
+        }
     }
 }

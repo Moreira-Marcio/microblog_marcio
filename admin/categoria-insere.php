@@ -5,7 +5,9 @@ use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Models\Categoria;
 use Microblog\Services\CategoriaServico;
+use Microblog\Auth\ControleDeAcesso;
 
+ControleDeAcesso::exigirAdmin();
 
 $categoriaServico = new CategoriaServico();
 

@@ -45,7 +45,7 @@ if (isset($_POST['entrar'])) {
         // se o usuario foi encontrado. verifica a senha digitada
         if ($usuario && password_verify($senha, $usuario['senha'])) {
             ControleDeAcesso::login($usuario['id'], $usuario['nome'], $usuario['tipo']);
-            header("Location: index.php");  
+            header("Location: admin/index.php");  
             exit;
         } else {
             // se a senha não for válida, redireciona para a página de login com erro

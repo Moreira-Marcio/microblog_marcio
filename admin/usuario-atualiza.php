@@ -6,6 +6,9 @@ use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Models\Usuario;
 use Microblog\Services\UsuarioServico;
+use Microblog\Auth\ControleDeAcesso;
+
+ControleDeAcesso::exigirAdmin();
 
 
 $mensagemErro = "";
