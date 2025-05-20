@@ -20,7 +20,7 @@ final class ControleDeAcesso
 
 
 
-    public function exigirLogin(): void
+    public static function exigirLogin(): void
     {   //inicia sessao (se necessario)
         self::iniciarSessao();
 
