@@ -2,25 +2,26 @@
 
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
+use Microblog\Services\UsuarioServico;
 
 require_once "vendor/autoload.php";
 
 
 /* Mensagens relacionadas ao processo de login/logout */
-if( isset($_GET["campos_obrigatorios"]) ){
-	$feedback = "Preencha e-mail e senha!";
-} elseif( isset($_GET['dados_incorretos']) ){
-	$feedback = "Algo de errado não está certo!";
-} elseif( isset($_GET['logout']) ){
-	$feedback = "Você saiu do sistema!";
-} elseif( isset($_GET['acesso_proibido']) ){
-	$feedback = "Você deve logar primeiro";
+if (isset($_GET["campos_obrigatorios"])) {
+    $feedback = "Preencha e-mail e senha!";
+} elseif (isset($_GET['dados_incorretos'])) {
+    $feedback = "Algo de errado não está certo!";
+} elseif (isset($_GET['logout'])) {
+    $feedback = "Você saiu do sistema!";
+} elseif (isset($_GET['acesso_proibido'])) {
+    $feedback = "Você deve logar primeiro";
 }
 
 if (isset($_POST['entrar'])) {
 
     $email = Utils::sanitizar($_POST['email'], 'email');
-    $senha = Utils::sanitizar($_POST['senha']);
+    $senha = $_POST['senha']; // nao precisa sanitizar pois sera codificado
 
     // Verificando campos obrigatórios
     if (empty($email) || empty($senha)) {
@@ -30,8 +31,27 @@ if (isset($_POST['entrar'])) {
 
     /* Processo de busca do usuário pelo e-mail e login na área administrativa */
 
-    
-    
+    try {
+        //busca atraves do e-mail informado
+        $usuarioServico = new UsuarioServico();
+        $usuario = $usuarioServico->buscarPorEmail($email);
+
+        if (!$usuario) {
+            header("Location: login.php?dados_incorretos");
+            exit;
+        }
+
+        // se o usuario foi encontrado. verifica a senha digitada
+        if ($usuario && password_verify($senha, $usuario['senha'])) {
+            echo "senhas iguais,pode logar";
+        } else {
+            echo "senhas diferentes,vaza daqui!";
+        }
+    } catch (Throwable $erro) {
+        Utils::registrarLog($erro);
+        header("Location: login.php?erro");
+        exit;
+    }
 }
 require_once "includes/cabecalho.php";
 ?>
@@ -41,7 +61,7 @@ require_once "includes/cabecalho.php";
         <h2 class="text-center fw-light">Acesso à área administrativa</h2>
 
         <form action="" method="post" id="form-login" name="form-login" class="mx-auto w-50" autocomplete="off">
-			<?php if( isset($feedback) ): ?>
+            <?php if (isset($feedback)): ?>
                 <p class="my-2 alert alert-warning text-center">
                     <?= $feedback ?>
                 </p>
@@ -61,7 +81,7 @@ require_once "includes/cabecalho.php";
     </div>
 </div>
 
-<?php 
+<?php
 require_once "includes/todas.php";
 require_once "includes/rodape.php";
 ?>
