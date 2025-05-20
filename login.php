@@ -1,5 +1,6 @@
 <?php
 
+use Microblog\Auth\ControleDeAcesso;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Services\UsuarioServico;
@@ -43,9 +44,13 @@ if (isset($_POST['entrar'])) {
 
         // se o usuario foi encontrado. verifica a senha digitada
         if ($usuario && password_verify($senha, $usuario['senha'])) {
-            echo "senhas iguais,pode logar";
+            ControleDeAcesso::login($usuario['id'], $usuario['nome'], $usuario['tipo']);
+            header("Location: index.php");  
+            exit;
         } else {
-            echo "senhas diferentes,vaza daqui!";
+            // se a senha não for válida, redireciona para a página de login com erro
+            header("Location: login.php?dados_incorretos");
+            exit;
         }
     } catch (Throwable $erro) {
         Utils::registrarLog($erro);
