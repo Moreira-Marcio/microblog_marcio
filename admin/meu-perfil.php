@@ -1,16 +1,20 @@
 <?php
 require_once "../vendor/autoload.php";
 
+use Microblog\Auth\ControleDeAcesso;
 use Microblog\Enums\TipoUsuario;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Models\Usuario;
 use Microblog\Services\UsuarioServico;
 
+//necessario chamar o exigir login para que esta pagina ytenha acesso
+//aos dados da sessao em andamento e do usuario logado
+ControleDeAcesso::exigirLogin();
 $usuarioServico = new UsuarioServico();
 
-// Configurar após programar Controle de Acesso
-$dados = $usuarioServico->buscarPorId(1); 
+// Buscando os dados do usuario logado na sessão a partir do id dele
+$dados = $usuarioServico->buscarPorId($_SESSION["id"]);  
 
 if (isset($_POST["atualizar"])) {
 	try {
@@ -21,20 +25,23 @@ if (isset($_POST["atualizar"])) {
 		Validacoes::validarEmail($email);
 
 		$senhaBruta = $_POST["senha"];
-
+         //avaliar senha: se o campo de senha estiver vazio, não altera a senha
+		// se o campo de senha estiver preenchido, verifica a senha
 		$senha = empty($senhaBruta) ? $dados["senha"] : Utils::verificarSenha($senhaBruta, $dados["senha"]);
 
 		// O tipo de usuário não pode ser alterado pelo próprio usuário
 		$tipo = TipoUsuario::from($dados["tipo"]);
 
 		// O ID do usuário é obtido da sessão (configurar após programar Controle de Acesso)
-		$id = 1;
+		$id = $_SESSION["id"];
 
 		$usuario = new Usuario($nome, $email, $senha, $tipo, $id);
 		$usuarioServico->atualizar($usuario);
 
 		// Atualizando a variável de sessão com o novo nome
 		// configurar após programar Controle de Acesso
+
+		$_SESSION["nome"] = $nome;
 
 
 

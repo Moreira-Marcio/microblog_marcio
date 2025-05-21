@@ -1,66 +1,66 @@
-<?php 
+<?php
 
 namespace Microblog\Auth;
 
-ControleDeAcesso::exigirAdmin();
+/* Sobre sessões no PHP 
+Sessão (SESSION) é uma funcionalidade usada principalmente para o controle de acesso e outras informações que sejam importantes enquanto o navegador estiver aberto com o site.
 
-//sobre sessoes- no php sessão(session) é uma funcionalidade usada para controle de acesso e outras imformações que seja importante enquanto o navegador estiver aberto no site
+Exemplos: áreas administrativas, painel de controle/dashboard, área do cliente, área do aluno etc.
 
-//exemplos: areas administrativas painel de controle/dashboard, area de cliente. areade aluno, etc.
-
-// nesta area o acesso se da atraves de agumas formas de autenticação.Exemplos: login/senha biometria, token, etc. 
+Nestas áreas o acesso se dá através de alguma forma de autenticação. Exemplos: login/senha, biometria, facial, 2-fatores etc. */
 
 final class ControleDeAcesso
 {
     private function __construct() {}
 
-    
-    public static function iniciarSessao(): void
+    /* Inicia uma sessão caso não tenha nenhuma em andamento */
+    private static function iniciarSessao():void
     {
-        if (!isset($_SESSION))session_start();
+        if(!isset($_SESSION)) session_start();
     }
 
-
-
+    /* "Bloqueia" páginas admin caso o usuário NÃO ESTEJA logado */
     public static function exigirLogin(): void
-    {   //inicia sessao (se necessario)
+    {
+        // Inicia sessão (se necessário)
         self::iniciarSessao();
-
-        //se nao existir uma variavel de sessao chamada id
-        if (!isset($_SESSION["id"])) {
+        
+        // Se NÃO EXISTIR uma variável de sessão chamada ID
+        if(!isset($_SESSION['id'])){
             session_destroy();
-            header("Location:../login.php?acesso_proibido");
-            exit();
+            header("location:../login.php?acesso_proibido");
+            exit;
         }
     }
 
-    public static function login(int $id, string $nome, string $tipo) :void
+    public static function login(int $id, string $nome, string $tipo):void 
     {
         self::iniciarSessao();
-        //definindo variaveis de sessao com dados de quem logou
-        $_SESSION["id"] = $id;
-        $_SESSION["nome"] = $nome;
-        $_SESSION["tipo"] = $tipo;
+
+        // Definindo variáveis de sessão com os dados de quem logou
+        $_SESSION['id'] = $id;
+        $_SESSION['nome'] = $nome;
+        $_SESSION['tipo'] = $tipo;
     }
-
-    public static function logout(): void
+    
+    public static function logout():void
     {
         self::iniciarSessao();
-
         session_destroy();
-        header("Location:../login.php?logout");
+        header("location:../login.php?logout");
         exit;
     }
 
-    public static function exigirAdmin(): void
+    public static function exigirAdmin():void 
     {
         self::iniciarSessao();
 
-        //se o tipo de usuario for diferente de admin
-        if ($_SESSION["tipo"] != "admin") {
-            session_destroy();
-            header("Location:nao-autorizado.php");
-            exit();
+        // Em certas páginas, se o usuario não for um admin, ele será 
+        // redirecionado para nao-autorizado
+        if($_SESSION['tipo'] !== 'admin'){
+            header("location:nao-autorizado.php");
+            exit;
         }
     }
+
 }

@@ -2,10 +2,11 @@
 
 use Microblog\Auth\ControleDeAcesso;
 
+ControleDeAcesso:: exigirLogin();
+
 if(isset($_GET['sair'])) ControleDeAcesso::logout();
 
 
-ControleDeAcesso:: exigirLogin();
 // DETECTANDO QUAL PÁGINA ESTÁ ABERTA (NECESSÁRIO PARA O SCRIPT DO RODAPE-ADMIN)
 $pagina = basename($_SERVER['PHP_SELF']);
 ?>
