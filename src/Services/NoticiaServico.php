@@ -24,12 +24,14 @@ class NoticiaServico
     {
 
         if ($tipoUsuario === TipoUsuario::ADMIN) {
+            // usa esse select (sem where) para carregar todas as noticias
             $sql = "SELECT noticias.id, noticias.titulo, 
                     noticias.data, usuarios.nome AS autor, noticias.destaque
                     FROM noticias INNER JOIN usuarios
                     ON noticias.usuario_id = usuarios.id
                     ORDER BY data DESC";
         } else {
+            // senao, usa esse select (com where) para carregar apenas as noticias do usuario(editor)
             $sql = "SELECT id, titulo, data, destaque
                     FROM noticias WHERE usuario_id = :usuario_id
                     ORDER BY data DESC";
